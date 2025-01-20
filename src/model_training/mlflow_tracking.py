@@ -16,7 +16,8 @@ mlflow.set_experiment("mlops_experiment")
 
 for n_estimators in [10, 50, 100]:
     with mlflow.start_run():
-        model = RandomForestClassifier(n_estimators=n_estimators, random_state=42)
+        model = RandomForestClassifier(n_estimators=n_estimators, 
+                                       random_state=42)
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
         accuracy = accuracy_score(y_test, y_pred)
