@@ -9,5 +9,5 @@ model = LinearRegression()
 model.fit(X, y)
 
 
-#print
+# print
 print("Model trained successfully!")
