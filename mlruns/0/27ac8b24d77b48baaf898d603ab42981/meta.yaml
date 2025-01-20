@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/RANGOpsdsk/Desktop/Python%20proj/MLOps%20Assignment/mlops-foundations/mlops_assignment/mlruns/0/27ac8b24d77b48baaf898d603ab42981/artifacts
+end_time: 1737357846045
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 27ac8b24d77b48baaf898d603ab42981
+run_name: nimble-doe-398
+run_uuid: 27ac8b24d77b48baaf898d603ab42981
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1737357823714
+status: 3
+tags: []
+user_id: RANGOpsdsk
