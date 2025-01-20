@@ -20,15 +20,15 @@ y = iris.target
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 # Initialize the RandomForestClassifier
-clf = RandomForestClassifier()
+model = RandomForestClassifier()
 
 # Start MLflow experiment
 with mlflow.start_run():
     # Train the model
-    clf.fit(X_train, y_train)
+    model.fit(X_train, y_train)
 
     # Make predictions
-    y_pred = clf.predict(X_test)
+    y_pred = model.predict(X_test)
 
     # Calculate accuracy
     accuracy = accuracy_score(y_test, y_pred)
@@ -37,6 +37,6 @@ with mlflow.start_run():
     mlflow.log_metric("accuracy", accuracy)
 
     # Log the model with input_example for signature
-    mlflow.sklearn.log_model(clf, "model", input_example=X_test[:1])  # Using first example for input
+    mlflow.sklearn.log_model(model, "model", input_example=X_test[:1])  # Using first example for input
 
     print(f"Accuracy: {accuracy}")
