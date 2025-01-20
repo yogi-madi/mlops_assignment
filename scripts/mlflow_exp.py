@@ -5,6 +5,12 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 
+
+
+# Set the experiment name (it will be created if it doesn't exist)
+experiment_name = "Iris_Model_Experiment"
+mlflow.set_experiment(experiment_name)
+
 # Load the Iris dataset
 iris = load_iris()
 X = iris.data
