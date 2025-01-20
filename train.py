@@ -7,5 +7,7 @@ y = np.array([1, 2, 3])
 
 model = LinearRegression()
 model.fit(X, y)
-#print
+
+
+# print
 print("Model trained successfully!")
