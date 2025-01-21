@@ -11,3 +11,4 @@ venv/
 
 # Ignore MLflow tracking logs
 mlruns/
+/data
