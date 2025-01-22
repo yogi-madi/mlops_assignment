@@ -1,0 +1,5 @@
+['remote "myremote"']
+url = gdrive://12f4KRmtUDeBMMbRrLSMPBycLlfLzpeYz
+gdrive_client_id = ${GD_DRIVE_CLIENT_ID}
+gdrive_client_secret = ${GD_DRIVE_CLIENT_SECRET}
+gdrive_service_account_json_file_path = service_credentials.json
