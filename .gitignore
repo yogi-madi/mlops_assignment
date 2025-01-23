@@ -6,8 +6,9 @@ __pycache__/
 venv/
 
 # DVC-specific files
-.dvc/
-!.dvc
+# .dvc/
+# !.dvc
 
 # Ignore MLflow tracking logs
 mlruns/
+/data
