@@ -37,7 +37,7 @@ jobs:
       - name: Install DVC
         run: pip install dvc
       - name: Pull dataset with DVC
-        run: dvc pull
+        run: dvc pull -r myremote
       - name: Verify dataset
         run: ls -l data/
 
