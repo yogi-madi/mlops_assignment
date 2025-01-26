@@ -63,6 +63,7 @@ jobs:
 
       - name: Prepare data and train model
         run: |
+          dvc pull -r myremote
           python prepare_data.py
           python train_model.py
 
