@@ -63,11 +63,18 @@ jobs:
 
       - name: Set up DVC credentials
         run: |
-          echo "${{ secrets.SERVICE_CREDENTIALS_JSON }}" > service_credentials.json
+            echo "${{ secrets.SERVICE_CREDENTIALS_JSON }}" > service_credentials.json
+            export GD_DRIVE_CLIENT_ID=${{ secrets.GD_DRIVE_CLIENT_ID }}
+            export GD_DRIVE_CLIENT_SECRET=${{ secrets.GD_DRIVE_CLIENT_SECRET }}
+  
+      - name: Configure DVC remote
+        run: |
+            dvc remote modify myremote gdrive_service_account_json_file_path service_credentials.json
+            dvc remote modify myremote gdrive_client_id "${GD_DRIVE_CLIENT_ID}"
+            dvc remote modify myremote gdrive_client_secret "${GD_DRIVE_CLIENT_SECRET}"
 
       - name: Prepare data and train model
         run: |
-          dvc remote modify myremote gdrive_service_account_json_file_path service_credentials.json
           dvc pull -r myremote
           python prepare_data.py
           python train_model.py
