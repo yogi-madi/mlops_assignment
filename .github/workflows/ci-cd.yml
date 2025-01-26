@@ -5,81 +5,95 @@ on: [push, pull_request]
 jobs:
   lint:
     runs-on: mlops-self-hosted
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.8'
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install flake8
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8
 
-    - name: Lint code
-      run: |
-        flake8 . --exit-zero --statistics > flake8_stats.txt
-        error_count=$(grep -oP '^\d+' flake8_stats.txt | awk '{s+=$1} END {print s}')
-        if [ "$error_count" -ge 10 ]; then
-            echo "Linting failed with $error_count errors."
-            exit 1
-        else
-            echo "Linting passed with $error_count errors."
-        fi
+      - name: Lint code
+        run: |
+          flake8 . --exit-zero --statistics > flake8_stats.txt
+          error_count=$(grep -oP '^\d+' flake8_stats.txt | awk '{s+=$1} END {print s}')
+          if [ "$error_count" -ge 10 ]; then
+              echo "Linting failed with $error_count errors."
+              exit 1
+          else
+              echo "Linting passed with $error_count errors."
+          fi
+
+      - name: Upload Flake8 stats
+        uses: actions/upload-artifact@v3
+        with:
+          name: flake8-report
+          path: flake8_stats.txt
 
   test:
     runs-on: mlops-self-hosted
     needs: lint
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.8'
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
 
-    - name: Prepare data and train model
-      run: |
-        # dvc pull --force
-        python prepare_data.py
-        python train_model.py
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Prepare data and train model
+        run: |
+          python prepare_data.py
+          python train_model.py
 
   build_and_deploy:
     runs-on: mlops-self-hosted
     needs: test
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Print current user
-      run: |
-        whoami
+      - name: Print current user
+        run: whoami
 
-    - name: Log in to Docker Hub
-      run: |
-        echo "${{ secrets.DOCKER_PASSWORD }}" | sudo docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      - name: Log in to Docker Hub
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | sudo docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-    - name: Build Docker image
-      run: |
-        sudo docker build -t mlops_assign_img .
+      - name: Build Docker image
+        run: |
+          sudo docker build -t mlops_assign_img .
 
-    - name: Push Docker image to Docker Hub
-      run: |
-        sudo docker tag mlops_assign_img ${{ secrets.DOCKER_USERNAME }}/mlops_assign_img:latest
-        sudo docker push ${{ secrets.DOCKER_USERNAME }}/mlops_assign_img:latest
+      - name: Push Docker image to Docker Hub
+        run: |
+          sudo docker tag mlops_assign_img ${{ secrets.DOCKER_USERNAME }}/mlops_assign_img:latest
+          sudo docker push ${{ secrets.DOCKER_USERNAME }}/mlops_assign_img:latest
 
-    - name: Deploy Docker container
-      run: |
-        sudo docker run -d -p 5000:5000 --name mlops_model_app ${{ secrets.DOCKER_USERNAME }}/mlops_assign_img:latest
+      - name: Deploy Docker container
+        run: |
+          sudo docker run -d -p 5000:5000 --name mlops_model_app ${{ secrets.DOCKER_USERNAME }}/mlops_assign_img:latest
+
+      - name: Fetch Docker Logs
+        if: failure()
+        run: |
+          sudo docker logs mlops_model_app
