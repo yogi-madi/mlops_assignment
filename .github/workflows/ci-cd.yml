@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   lint:
-    runs-on: mlops-self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -37,7 +37,7 @@ jobs:
           path: flake8_stats.txt
 
   test:
-    runs-on: mlops-self-hosted
+    runs-on: ubuntu-latest
     needs: lint
     steps:
       - name: Checkout code
@@ -67,7 +67,7 @@ jobs:
           python train_model.py
 
   build_and_deploy:
-    runs-on: mlops-self-hosted
+    runs-on: ubuntu-latest
     needs: test
     steps:
       - name: Checkout code
