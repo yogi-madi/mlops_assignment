@@ -61,8 +61,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Set up DVC credentials
+        run: |
+          echo "${{ secrets.SERVICE_CREDENTIALS_JSON }}" > service_credentials.json
+
       - name: Prepare data and train model
         run: |
+          dvc remote modify myremote gdrive_service_account_json_file_path service_credentials.json
           dvc pull -r myremote
           python prepare_data.py
           python train_model.py
